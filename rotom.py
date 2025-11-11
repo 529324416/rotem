@@ -492,27 +492,38 @@ class InfoBoard:
 
 if __name__ == "__main__":
 
-    W, H = 12, 12
-    Map = Tilemap(W, H, default_tile_char='·', default_tile_color=(100,100,100))
-    agent_tile = Tile(char='@', color="#942c4b", bold=False)
+    # import rotom
+    # tilemap = Tilemap(5, 5)
+    tilemap = Tilemap(8, 8)
+    tilemap.set_char(5, 5, '@')
 
-    board = InfoBoard()
-    board.set_info("Position", "(0, 0)")
+    infos = InfoBoard()
+    infos.set_info("title", "content")
+
+    result = vertical_combine(tilemap(), infos(), sep='/')
+    print(result)
+
+    # W, H = 12, 12
+    # Map = Tilemap(W, H, default_tile_char='·', default_tile_color=(100,100,100))
+    # agent_tile = Tile(char='@', color="#942c4b", bold=False)
+
+    # board = InfoBoard()
+    # board.set_info("Position", "(0, 0)")
     
-    import time
-    x = 0
-    y = 0
-    while 1:
-        Map.clear()
-        Map.set_tile(x, y, agent_tile)
-        clear_console()
-        _map = add_border(Map.render())
-        _board = board.render()
-        print(horizontal_combine(_map, _board, sep='   '))
+    # import time
+    # x = 0
+    # y = 0
+    # while 1:
+    #     Map.clear()
+    #     Map.set_tile(x, y, agent_tile)
+    #     clear_console()
+    #     _map = add_border(Map.render())
+    #     _board = board.render()
+    #     print(horizontal_combine(_map, _board, sep='   '))
 
-        x += 1
-        board.set_info("Position", f"({x}, {y})")
-        if x >= W:
-            break
+    #     x += 1
+    #     board.set_info("Position", f"({x}, {y})")
+    #     if x >= W:
+    #         break
 
-        time.sleep(1)
+    #     time.sleep(1)
