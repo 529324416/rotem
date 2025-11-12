@@ -6,6 +6,7 @@
 __version__ = "0.1.0"
 
 import re
+import time
 
 class Char:
 
@@ -495,19 +496,47 @@ class InfoBoard:
     
     def __call__(self, *args, **kwds):
         return self.render()
+    
+class TerminalRenderer:
+    '''A class to render game elements using rotom library.
+    '''
+
+    def __init__(self, size = (10, 10)):
+        self.size = size
+        self.tilemap = Tilemap(size[0], size[1])
+        self.infos = InfoBoard()
+
+    def render(self, has_map_border = True):
+        '''Render the current state of the game.'''
+
+        clear_console()
+        _map = add_border(self.tilemap.render()) if has_map_border else self.tilemap.render()
+        result = horizontal_combine(_map, self.infos.render(), sep='   ')
+        print(result)
+
+    def run(self, game_logic, fps = 2):
+        '''Run the game loop with the provided game logic function.
+        @param game_logic: A function that takes the TerminalRenderer instance as an argument and returns a boolean indicating whether to exit the loop.
+        @param fps: Frames per second for rendering speed.'''
+
+        while True:
+            self.render()
+            if game_logic(self):
+                break
+            time.sleep(1 / fps)
             
 
 if __name__ == "__main__":
 
     # import rotom
     # tilemap = Tilemap(5, 5)
-    tilemap = Tilemap(8, 8)
-    tilemap.set_char(5, 5, '@')
+    renderer = Tilemap(8, 8)
+    renderer.set_char(5, 5, '@')
 
     infos = InfoBoard()
     infos.set_info("title", "content")
 
-    result = vertical_combine(tilemap(), infos(), sep='/')
+    result = vertical_combine(renderer(), infos(), sep='/')
     print(result)
 
     # W, H = 12, 12

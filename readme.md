@@ -69,7 +69,7 @@ result = horizontal_combine(tilemap(), infos(), sep='   ')
 print(result)
 ```
 
-this would output:
+this will output:
 
 ```
 · · · · · · · ·   +--------------------------------+
