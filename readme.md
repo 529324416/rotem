@@ -5,8 +5,25 @@ rotom is a simple tui library used to draw tilemap and some informations on term
 ## Fast Usage
 
 ```python
-import rotom
-tilemap = rotom.Tilemap(5, 5)
+from rotem import *
+
+tilemap = Tilemap()       # default size is (5, 5)
+print(tilemap)
+```
+
+this will output 
+
+```
+· · · · ·
+· · · · ·
+· · · · ·
+· · · · ·
+· · · · ·
+```
+and you can set character for each point
+
+```python
+tilemap = Tilemap()
 tilemap.set_char(0, 0, '@')
 print(tilemap)
 ```
@@ -47,13 +64,13 @@ print(add_border(tilemap()))
 you will get something like this:
 
 ```
-+-----------+
-| · · · · · |
-| · · · · · |
-| · · · · · |
-| · · · · · |
-| · · · · · |
-+-----------+
+┌───────────┐
+│ · · · · · │
+│ · · · · · │
+│ · · · · · │
+│ · · · · · │
+│ · · · · · │
+└───────────┘
 ```
 
 except the game map, rotom provide tool to render informations. 

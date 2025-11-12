@@ -3,7 +3,7 @@
 # Copyright (c) 2024 PrinceBiscuit <redsawbiscuit@gmail.com>
 # License: MIT
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 import re
 import time
@@ -100,9 +100,11 @@ def align(str1, length, align_type = 'center', pad_char = ' '):
     if align_type == 'left':
         padding = pad_char * padding_length
         return str1 + padding
+    
     elif align_type == 'right':
         padding = pad_char * padding_length
         return padding + str1
+    
     elif align_type == 'center':
         left_padding_length = padding_length // 2
         right_padding_length = padding_length - left_padding_length
@@ -203,32 +205,53 @@ def add_style(s, col, bg_col, bold, underline):
 
     
 def add_border(
-        content,
-        min_length = 0,
-        min_height = 0, 
-        corner_char = '+', 
-        horizontal_char = '-', 
-        vertical_char = '|',
-        border_color = None,
-        border_background_color = None,
-        border_bold = False,
-        border_underline = False
+        S,
+        min_w = 0,
+        min_h = 0, 
+        lt = '┌',
+        rt = '┐',
+        lb = '└',
+        rb = '┘',
+        hc = '─', 
+        vc = '│',
+        col = None,
+        bg_col = None,
+        bold = False,
+        underline = False
     ):
-    '''render content on a board'''
+    '''
+    Add a border around the given string S.
 
-    lines = content.splitlines()
+    Arguments:
+    :param S: content string
+    :param min_w: minimum width of the board
+    :param min_h: minimum height of the board
+    :param lt: left top corner character
+    :param rt: right top corner character
+    :param lb: left bottom corner character
+    :param rb: right bottom corner character
+    :param hc: horizontal connector character
+    :param vc: vertical connector character
+    :param col: color of the border
+    :param bg_col: background color of the border
+    :param bold: whether the border is bold
+    :param underline: whether the border is underlined'''
+
+    lines = S.splitlines()
     longest_line = max(lenx(line) for line in lines) if lines else 0
-    longest_line = max(longest_line, min_length)
+    longest_line = max(longest_line, min_w)
 
-    top_border = corner_char + (horizontal_char * (longest_line + 2)) + corner_char
-    top_border = add_style(top_border, border_color, border_background_color, border_bold, border_underline)
-    bottom_border = top_border
+    top_border = lt + (hc * (longest_line + 2)) + rt
+    top_border = add_style(top_border, col, bg_col, bold, underline)
 
-    if len(lines) < min_height:
-        for _ in range(min_height - len(lines)):
+    bottom_border = lb + (hc * (longest_line + 2)) + rb
+    bottom_border = add_style(bottom_border, col, bg_col, bold, underline)
+
+    if len(lines) < min_h:
+        for _ in range(min_h - len(lines)):
             lines.append('')
 
-    _vc = add_style(vertical_char, border_color, border_background_color, border_bold, border_underline)
+    _vc = add_style(vc, col, bg_col, bold, underline)
 
     board_lines = [top_border]
     for line in lines:
@@ -272,8 +295,8 @@ class Tilemap:
 
     def __init__(
         self, 
-        width=10, 
-        height=10, 
+        width=5, 
+        height=5, 
         default_tile_char = '·',
         default_tile_color = None,
         default_tile_background_color = None,
@@ -430,7 +453,7 @@ class _InfoGroup:
             lines.insert(0, _title)
 
         total = '\n'.join(lines)
-        boarded = add_border(total, min_length=30)
+        boarded = add_border(total, min_w=30)
         return boarded
 
     def __str__(self):
@@ -497,69 +520,36 @@ class InfoBoard:
     def __call__(self, *args, **kwds):
         return self.render()
     
-class TerminalRenderer:
-    '''A class to render game elements using rotom library.
-    '''
+# class TerminalRenderer:
+#     '''A class to render game elements using rotom library.
+#     '''
 
-    def __init__(self, size = (10, 10)):
-        self.size = size
-        self.tilemap = Tilemap(size[0], size[1])
-        self.infos = InfoBoard()
+#     def __init__(self, size = (10, 10)):
+#         self.size = size
+#         self.tilemap = Tilemap(size[0], size[1])
+#         self.infos = InfoBoard()
 
-    def render(self, has_map_border = True):
-        '''Render the current state of the game.'''
+#     def render(self, has_map_border = True):
+#         '''Render the current state of the game.'''
 
-        clear_console()
-        _map = add_border(self.tilemap.render()) if has_map_border else self.tilemap.render()
-        result = horizontal_combine(_map, self.infos.render(), sep='   ')
-        print(result)
+#         clear_console()
+#         _map = add_border(self.tilemap.render()) if has_map_border else self.tilemap.render()
+#         result = horizontal_combine(_map, self.infos.render(), sep='   ')
+#         print(result)
 
-    def run(self, game_logic, fps = 2):
-        '''Run the game loop with the provided game logic function.
-        @param game_logic: A function that takes the TerminalRenderer instance as an argument and returns a boolean indicating whether to exit the loop.
-        @param fps: Frames per second for rendering speed.'''
+#     def run(self, game_logic, fps = 2):
+#         '''Run the game loop with the provided game logic function.
+#         @param game_logic: A function that takes the TerminalRenderer instance as an argument and returns a boolean indicating whether to exit the loop.
+#         @param fps: Frames per second for rendering speed.'''
 
-        while True:
-            self.render()
-            if game_logic(self):
-                break
-            time.sleep(1 / fps)
+#         while True:
+#             self.render()
+#             if game_logic(self):
+#                 break
+#             time.sleep(1 / fps)
             
 
 if __name__ == "__main__":
 
-    # import rotom
-    # tilemap = Tilemap(5, 5)
-    renderer = Tilemap(8, 8)
-    renderer.set_char(5, 5, '@')
-
-    infos = InfoBoard()
-    infos.set_info("title", "content")
-
-    result = vertical_combine(renderer(), infos(), sep='/')
-    print(result)
-
-    # W, H = 12, 12
-    # Map = Tilemap(W, H, default_tile_char='·', default_tile_color=(100,100,100))
-    # agent_tile = Tile(char='@', color="#942c4b", bold=False)
-
-    # board = InfoBoard()
-    # board.set_info("Position", "(0, 0)")
-    
-    # import time
-    # x = 0
-    # y = 0
-    # while 1:
-    #     Map.clear()
-    #     Map.set_tile(x, y, agent_tile)
-    #     clear_console()
-    #     _map = add_border(Map.render())
-    #     _board = board.render()
-    #     print(horizontal_combine(_map, _board, sep='   '))
-
-    #     x += 1
-    #     board.set_info("Position", f"({x}, {y})")
-    #     if x >= W:
-    #         break
-
-    #     time.sleep(1)
+    tilemap = Tilemap()
+    print(add_border(tilemap()))
