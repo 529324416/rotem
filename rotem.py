@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+# rotom - a simple python library used to draw text-based 2d grid game map and informations
+# Copyright (c) 2024 PrinceBiscuit <redsawbiscuit@gmail.com>
+# License: MIT
+
+__version__ = "0.1.0"
+
 import re
 
 class Char:
